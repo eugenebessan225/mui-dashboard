@@ -1,6 +1,7 @@
 import { Grid, Paper } from "@mui/material";
 import Chart from "./Chart";
-import EnhancedTable from "./TableData";
+import DataForm from "./DataForm";
+import DataTable from "./TableData";
 
 export default function Dashboard() {
   return (
@@ -12,7 +13,17 @@ export default function Dashboard() {
       </Grid>
       <Grid item xs={12} md={6}>
         <Paper>
-          <EnhancedTable />
+          <DataTable />
+        </Paper>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Paper>
+          <DataTable />
+        </Paper>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Paper>
+          <DataForm />
         </Paper>
       </Grid>
     </Grid>
