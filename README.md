@@ -40,6 +40,16 @@ git clone https://github.com/td2thinh/mui-dashboard.git
 npm install
 ```
 
+
+## Usage
+
+Run app
+
+```sh
+npm run dev
+```
+
+
 3. Socket Usage
 
 This front end app is a SocketIO client, the client is initialized in `socket.ts`
@@ -79,14 +89,6 @@ Sending event from the client to the server
 >
   {dataRequest ? "Stop Data Request" : "Start Data Request"}
 </Button>
-```
-
-## Usage
-
-Run app
-
-```sh
-npm run dev
 ```
 
 App available at http://localhost:PORT
