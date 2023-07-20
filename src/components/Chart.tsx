@@ -106,7 +106,7 @@ const Chart = ({ id, socket }: ChartProps) => {
       // data.x is timestamp of the data point in ms since 1970
       // data.x - timeBeginInMS is timestamp of the data point in ms since the beginning of the day
       // will fit into the origin of the X Axis
-      console.log(data);
+      // console.log(data);
       const timeStamp = data.x - timeBeginInMS;
       series.add({ x: timeStamp, y: data.y });
     });
