@@ -1,9 +1,9 @@
 import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextField, Typography, Grid, Button } from "@mui/material";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import * as yup from "yup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // Define the data type for the form
 type FormData = {
