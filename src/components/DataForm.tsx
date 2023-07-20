@@ -1,13 +1,19 @@
 import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextField, Typography, Grid, Button } from "@mui/material";
+import { io, Socket } from "socket.io-client";
 import * as yup from "yup";
+import { useEffect, useState } from "react";
 
 // Define the data type for the form
 type FormData = {
   operation_name: string;
   value_a: number;
   value_b: number;
+};
+
+type DataFormProps = {
+  socket: Socket;
 };
 
 // Define the validation schema
@@ -17,8 +23,11 @@ const schema = yup.object().shape({
   value_b: yup.number().required(),
 });
 
-const DataForm = () => {
-  // Destruction of the useForm hook
+const DataForm = ({ socket }: DataFormProps) => {
+  const [dataRequest, setDataRequest] = useState(false);
+  const [runScript, setRunScript] = useState(false);
+
+  // Deconstruction of the useForm hook
   const {
     register,
     control,
@@ -71,6 +80,32 @@ const DataForm = () => {
           </Grid>
           <Button type="submit" variant="contained">
             Submit
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => {
+              dataRequest
+                ? socket.emit("data_request_stop")
+                : socket.emit("data_request");
+              setDataRequest(!dataRequest);
+            }}
+            style={{ marginLeft: "1rem" }}
+          >
+            {dataRequest ? "Stop Data Request" : "Start Data Request"}
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => {
+              runScript
+                ? socket.emit("kill_script")
+                : socket.emit("launch_script");
+              setRunScript(!runScript);
+            }}
+            style={{ marginLeft: "1rem" }}
+          >
+            {runScript ? "Kill Script" : "Launch Script"}
           </Button>
         </form>
       </div>

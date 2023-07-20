@@ -7,7 +7,13 @@ import {
   PointShape,
 } from "@arction/lcjs";
 import { useRef, useEffect } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+import { Button } from "@mui/material";
+
+type ChartProps = {
+  id: string;
+  socket: Socket;
+};
 
 // total time since 1970 in ms
 const timeBeginInMS = new Date().getTime();
@@ -18,7 +24,7 @@ const timeBegin =
   new Date().getSeconds() * 1000 +
   new Date().getMilliseconds();
 
-const Chart = ({ id }) => {
+const Chart = ({ id, socket }: ChartProps) => {
   const chartRef = useRef(undefined);
 
   useEffect(() => {
@@ -96,18 +102,22 @@ const Chart = ({ id }) => {
     chart.zoom({ x: -200, y: 180 }, { x: 10000, y: 10000 });
 
     // Connect to socket.io server
-    const socket = io("http://localhost:8080");
     socket.on("data", (data) => {
       // timestamp in ms
       // data.x is timestamp of the data point in ms since 1970
       // data.x - timeBeginInMS is timestamp of the data point in ms since the beginning of the day
       // will fit into the origin of the X Axis
+      console.log(data);
       const timeStamp = data.x - timeBeginInMS;
       series.add({ x: timeStamp, y: data.y });
     });
-  }, [chartRef]);
+  }, [chartRef, socket]);
 
-  return <div id={id} className="chart-container"></div>;
+  return (
+    <>
+      <div id={id} className="chart-container"></div>
+    </>
+  );
 };
 
 export default Chart;
