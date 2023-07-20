@@ -8,6 +8,7 @@
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Usage](#usage)
+  - [Socket Usage](#socket-usage)
 - [TODO](#todo)
 
 ## About The Project
