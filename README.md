@@ -50,7 +50,7 @@ npm run dev
 ```
 
 
-3. Socket Usage
+### Socket Usage
 
 This front end app is a SocketIO client, the client is initialized in `socket.ts`
 
