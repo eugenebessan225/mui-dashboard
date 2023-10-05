@@ -5,12 +5,18 @@ import DataTable from "./TableData";
 import ModelOutput from "./ModelOutput";
 import { useEffect } from "react";
 import { socket } from "../socket";
+import Launch from "./Launch";
+
+
 export default function Dashboard() {
   useEffect(() => {
     socket.on("connect", () => {
       console.log("connected");
     });
   }, []);
+
+
+
 
   return (
     <Grid container spacing={3}>
@@ -33,6 +39,9 @@ export default function Dashboard() {
         <Paper>
           <DataForm socket={socket} />
         </Paper>
+      </Grid>
+      <Grid item xs={12} md={12}>
+          <Launch />
       </Grid>
     </Grid>
   );

@@ -1,15 +1,16 @@
 import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextField, Typography, Grid, Button } from "@mui/material";
+import { Check, Close } from "@mui/icons-material";
 import { Socket } from "socket.io-client";
 import * as yup from "yup";
 import { useState } from "react";
+// import axios from "axios"; // Importez Axios ou la bibliothèque que vous utilisez pour les requêtes HTTP
+
 
 // Define the data type for the form
 type FormData = {
-  operation_name: string;
-  value_a: number;
-  value_b: number;
+  observation: string;
 };
 
 type DataFormProps = {
@@ -18,14 +19,12 @@ type DataFormProps = {
 
 // Define the validation schema
 const schema = yup.object().shape({
-  operation_name: yup.string().required(),
-  value_a: yup.number().required(),
-  value_b: yup.number().required(),
+  observatio: yup.string().required(),
 });
 
 const DataForm = ({ socket }: DataFormProps) => {
   const [dataRequest, setDataRequest] = useState(false);
-  const [runScript, setRunScript] = useState(false);
+  // const [serverStatus, setServerStatus] = useState(false); // État initial du serveur
 
   // Deconstruction of the useForm hook
   const {
@@ -42,46 +41,85 @@ const DataForm = ({ socket }: DataFormProps) => {
   const onSubmit: SubmitHandler<FormData> = (data: FormData) =>
     console.log(data);
 
+    // const handleLaunchServer = async () => {
+    
+    //   try {
+    //     // Faites une requête à l'API Flask
+    //     const api_path = "http://192.168.1.122:5005/sshserver"
+    //     const response = await axios.get(api_path); // Remplacez l'URL par votre URL d'API
+    //     console.log(response);
+    //     setServerStatus(!serverStatus);
+        
+    //   } catch (error) {
+    //     console.error('Erreur lors de la requête API', error);
+    //   }
+    // }
+
+  
+
   return (
-    <>
-      <div style={{ height: "45vh", width: "100%" }}>
-        <Typography variant="h6" component="h2">
+      <div style={{width: "100%" }}>
+        <Typography>
           Form
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={3} style={{ padding: "2rem" }}>
             <Grid item xs={12} md={6}>
               <Controller
-                name="operation_name"
+                name="observation"
                 control={control}
                 defaultValue="abckjxk_aiqow"
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Operation Name"
+                    label="Observation"
                     variant="outlined"
                     fullWidth
-                    error={!!errors.operation_name}
-                    helperText={errors?.operation_name?.message}
+                    error={!!errors.observation}
+                    helperText={errors?.observation?.message}
                   />
                 )}
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                {...register("value_a")}
-                label="Value A"
-                variant="outlined"
-                fullWidth
-                error={!!errors.value_a}
-                helperText={errors?.value_a?.message}
-              />
+              <Button type="submit" variant="contained">
+              Submit
+              </Button>
+            </Grid>
+            <Grid item xs={6} md={6}>
+            <Typography>
+              Evaluer Opération : 
+            </Typography>
+          </Grid>
+            <Grid item xs={6} md={6}>
+              
+              <Button variant="contained" style={{
+              backgroundColor: 'red',
+              color: 'white',
+              marginRight: '10px',
+            }}>
+                <Close /> {/* Icône "Cancel" (X) */}
+              </Button>
+              <Button variant="contained" style={{
+              backgroundColor: 'green',
+              color: 'white',
+              marginRight: '10px',
+            }}>
+                <Check /> {/* Icône "Cancel" (X) */}
+              </Button>
+              
             </Grid>
           </Grid>
-          <Button type="submit" variant="contained">
-            Submit
-          </Button>
-          <Button
+          
+          {/* <Button
+            type="button"
+            variant="outlined"
+            onClick={handleLaunchServer}
+            style={{ marginLeft: "1rem" }}
+          >
+            {serverStatus ? "stop Server" : "Launch Server"}
+          </Button> */}
+          {/* <Button
             type="button"
             variant="outlined"
             onClick={() => {
@@ -93,23 +131,9 @@ const DataForm = ({ socket }: DataFormProps) => {
             style={{ marginLeft: "1rem" }}
           >
             {dataRequest ? "Stop Data Request" : "Start Data Request"}
-          </Button>
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={() => {
-              runScript
-                ? socket.emit("kill_script")
-                : socket.emit("launch_script");
-              setRunScript(!runScript);
-            }}
-            style={{ marginLeft: "1rem" }}
-          >
-            {runScript ? "Kill Script" : "Launch Script"}
-          </Button>
+          </Button> */}
         </form>
       </div>
-    </>
   );
 };
 

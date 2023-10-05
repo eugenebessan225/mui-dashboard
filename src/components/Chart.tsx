@@ -52,6 +52,20 @@ const Chart = ({ id, socket }: ChartProps) => {
       })
       .setPointSize(5);
 
+      const series2 = chart
+      .addPointLineSeries({
+        pointShape: PointShape.Circle,
+        dataPattern: {
+          //   // pattern: 'ProgressiveX' => Each consecutive data point has increased X coordinate.
+          pattern: "ProgressiveX",
+          //   // regularProgressiveStep: true => The X step between each consecutive data point is regular (for example, always `1.0`).
+          //   regularProgressiveStep: true,
+        },
+      })
+      .setPointSize(5);
+      
+
+
     // Setting for Data Cleaning.
     // 10 Mins * 60 Secs * 1000 Millisecs / 5 Millisecs = 1200000 data points
     series.setDataCleaning({
@@ -80,7 +94,7 @@ const Chart = ({ id, socket }: ChartProps) => {
     );
 
     // Store references to chart components.
-    chartRef.current = { chart, series };
+    chartRef.current = { chart, series, series2};
 
     // Return function that will destroy the chart when component is unmounted.
     return () => {
@@ -96,19 +110,16 @@ const Chart = ({ id, socket }: ChartProps) => {
     if (!components) return;
 
     // Set chart data.
-    const { series, chart } = components;
+    const { series, series2, chart } = components;
     // Set default view
     chart.zoom({ x: -200, y: 180 }, { x: 10000, y: 10000 });
 
     // Connect to socket.io server
-    socket.on("data", (data) => {
-      // timestamp in ms
-      // data.x is timestamp of the data point in ms since 1970
-      // data.x - timeBeginInMS is timestamp of the data point in ms since the beginning of the day
-      // will fit into the origin of the X Axis
-      // console.log(data);
+    socket.on("rms_data", (data) => {      
+      console.log(data);
       const timeStamp = data.x - timeBeginInMS;
-      series.add({ x: timeStamp, y: data.y });
+      series.add({ x: timeStamp, y: data.rms1 });
+      series2.add({ x: timeStamp, y: data.rms2 });
     });
   }, [chartRef, socket]);
 

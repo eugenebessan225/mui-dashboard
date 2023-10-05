@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 
+
 const columns = [
   { field: "id", headerName: "ID", width: 300 },
   { field: "operation_name", headerName: "Name", width: 200 },
@@ -17,12 +18,10 @@ const DataTable = () => {
       .then((data) => setTableData(data));
   }, []);
 
-  console.log(tableData);
-
   return (
-    <div style={{ height: "45vh", width: "100%" }}>
-      <DataGrid rows={tableData} columns={columns} autoPageSize />
-    </div>
+      <div style={{ height: "45vh", width: "100%" }}>
+        <DataGrid rows={tableData} columns={columns} autoPageSize />
+      </div>
   );
 };
 
