@@ -6,7 +6,7 @@ import {
   emptyLine,
   PointShape,
 } from "@arction/lcjs";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 
 type ChartProps = {
@@ -25,6 +25,8 @@ const timeBegin =
 
 const Chart = ({ id, socket }: ChartProps) => {
   const chartRef = useRef(undefined);
+  const xAxisRef = useRef(undefined); // Référence pour l'axe X
+  const [maxY, setMaxY] = useState(0);
 
   useEffect(() => {
     // Create chart, series and any other static components.
@@ -81,6 +83,8 @@ const Chart = ({ id, socket }: ChartProps) => {
       .setStrokeStyle(emptyLine)
       // Enable Progressive Scroll Strategy for X Axis.
       .setScrollStrategy(AxisScrollStrategies.progressive);
+      
+      xAxisRef.current = axisX; // Stockez l'axe X dans la référence
 
     // Setting for Y Axis.
     chart.getDefaultAxisY().setTitle("Y Axis");
@@ -112,14 +116,20 @@ const Chart = ({ id, socket }: ChartProps) => {
     // Set chart data.
     const { series, series2, chart } = components;
     // Set default view
-    chart.zoom({ x: -200, y: 180 }, { x: 10000, y: 10000 });
+    chart.zoom({ x: -200, y: 180 }, { x: 200, y: Math.max(maxY, 500) });
 
     // Connect to socket.io server
-    socket.on("rms_data", (data) => {      
+    socket.on("data", (data) => {      
       console.log(data);
       const timeStamp = data.x - timeBeginInMS;
-      series.add({ x: timeStamp, y: data.rms1 });
-      series2.add({ x: timeStamp, y: data.rms2 });
+      series.add({ x: timeStamp, y: data.y1 });
+      series2.add({ x: timeStamp, y: data.y2 });
+
+      // Met à jour la valeur maximale de l'axe Y
+      setMaxY(Math.max(data.y1, data.y2));
+
+      // Met à jour la plage de l'axe X pour s'adapter aux nouvelles données
+      axisX.setInterval(timeStamp - 200, timeStamp + 200); // Vous pouvez ajuster la plage en fonction de vos besoins
     });
   }, [chartRef, socket]);
 

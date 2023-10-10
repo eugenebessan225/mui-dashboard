@@ -1,4 +1,4 @@
-"""@sio.on('data_request')
+@sio.on('data_request')
 async def send_data(sid):
     print("In data request")
     
@@ -124,4 +124,4 @@ async def read_data(hat, num_channels, time, freq):
 		}
             #await sio.emit('rms_data', rms_data)
 
-        sleep(0.1)  # wait for "enough" acquisition to take place"""
+        sleep(0.1)  # wait for "enough" acquisition to take place
