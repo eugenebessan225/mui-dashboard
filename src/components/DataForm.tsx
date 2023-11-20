@@ -1,10 +1,8 @@
-import { SubmitHandler, useForm, Controller } from "react-hook-form";
+import {useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextField, Typography, Grid, Button } from "@mui/material";
 import { Check, Close } from "@mui/icons-material";
-import { Socket } from "socket.io-client";
 import * as yup from "yup";
-import { useState } from "react";
 // import axios from "axios"; // Importez Axios ou la bibliothèque que vous utilisez pour les requêtes HTTP
 
 
@@ -13,24 +11,18 @@ type FormData = {
   observation: string;
 };
 
-type DataFormProps = {
-  socket: Socket;
-};
 
 // Define the validation schema
 const schema = yup.object().shape({
-  observatio: yup.string().required(),
+  observation: yup.string().required(),
 });
 
-const DataForm = ({ socket }: DataFormProps) => {
-  const [dataRequest, setDataRequest] = useState(false);
+const DataForm = () => {
   // const [serverStatus, setServerStatus] = useState(false); // État initial du serveur
-
   // Deconstruction of the useForm hook
   const {
-    register,
     control,
-    handleSubmit,
+    //handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
     // include yup resolver into useForm hook
@@ -38,23 +30,8 @@ const DataForm = ({ socket }: DataFormProps) => {
   });
 
   // Handle the form submission
-  const onSubmit: SubmitHandler<FormData> = (data: FormData) =>
-    console.log(data);
-
-    // const handleLaunchServer = async () => {
-    
-    //   try {
-    //     // Faites une requête à l'API Flask
-    //     const api_path = "http://192.168.1.122:5005/sshserver"
-    //     const response = await axios.get(api_path); // Remplacez l'URL par votre URL d'API
-    //     console.log(response);
-    //     setServerStatus(!serverStatus);
-        
-    //   } catch (error) {
-    //     console.error('Erreur lors de la requête API', error);
-    //   }
-    // }
-
+  // const onSubmit: SubmitHandler<FormData> = (data: FormData) =>
+  //   console.log(data);
   
 
   return (
@@ -62,7 +39,8 @@ const DataForm = ({ socket }: DataFormProps) => {
         <Typography>
           Form
         </Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        {/* <form onSubmit={handleSubmit(onSubmit)}> */}
+        <form>
           <Grid container spacing={3} style={{ padding: "2rem" }}>
             <Grid item xs={12} md={6}>
               <Controller

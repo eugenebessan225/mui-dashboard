@@ -3,11 +3,14 @@ import {
   AxisScrollStrategies,
   AxisTickStrategies,
   Themes,
-  emptyLine,
-  PointShape,
+  ChartXY,
+  PointMarker,
+  UIBackground,
+  LineSeries,
 } from "@arction/lcjs";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { Socket } from "socket.io-client";
+
 
 type ChartProps = {
   id: string;
@@ -24,9 +27,9 @@ const timeBegin =
   new Date().getMilliseconds();
 
 const Chart = ({ id, socket }: ChartProps) => {
-  const chartRef = useRef(undefined);
-  const xAxisRef = useRef(undefined); // Référence pour l'axe X
-  const [maxY, setMaxY] = useState(0);
+  const chartRef = useRef<{ chart: ChartXY<PointMarker, UIBackground>; series: LineSeries; series2: LineSeries } | null>(
+    null
+  );
 
   useEffect(() => {
     // Create chart, series and any other static components.
@@ -43,28 +46,19 @@ const Chart = ({ id, socket }: ChartProps) => {
 
     // Create line series optimized for regular progressive X data.
     const series = chart
-      .addPointLineSeries({
-        pointShape: PointShape.Circle,
+      .addLineSeries({
         dataPattern: {
-          //   // pattern: 'ProgressiveX' => Each consecutive data point has increased X coordinate.
           pattern: "ProgressiveX",
-          //   // regularProgressiveStep: true => The X step between each consecutive data point is regular (for example, always `1.0`).
-          //   regularProgressiveStep: true,
         },
       })
-      .setPointSize(5);
 
       const series2 = chart
-      .addPointLineSeries({
-        pointShape: PointShape.Circle,
+      .addLineSeries({
         dataPattern: {
-          //   // pattern: 'ProgressiveX' => Each consecutive data point has increased X coordinate.
           pattern: "ProgressiveX",
-          //   // regularProgressiveStep: true => The X step between each consecutive data point is regular (for example, always `1.0`).
-          //   regularProgressiveStep: true,
         },
       })
-      .setPointSize(5);
+      
       
 
 
@@ -73,21 +67,29 @@ const Chart = ({ id, socket }: ChartProps) => {
     series.setDataCleaning({
       minDataPointCount: (10 * 60 * 10000) / 5,
     });
+    series2.setDataCleaning({
+      minDataPointCount: (10 * 60 * 10000) / 5,
+    });
+
     // Setting for X Axis.
-    const axisX = chart
+    chart
       .getDefaultAxisX()
+
       // Enable TimeTickStrategy for X Axis for ms resolution.
       .setTickStrategy(AxisTickStrategies.Time, (tickStrategy) =>
         tickStrategy.setTimeOrigin(timeBegin)
       )
-      .setStrokeStyle(emptyLine)
+      //.setStrokeStyle(emptyLine)
       // Enable Progressive Scroll Strategy for X Axis.
-      .setScrollStrategy(AxisScrollStrategies.progressive);
-      
-      xAxisRef.current = axisX; // Stockez l'axe X dans la référence
+      .setScrollStrategy(AxisScrollStrategies.progressive)
+      .setInterval({ start: 0, end: 5000, stopAxisAfter: false })
+      //xAxisRef.current = axisX; // Stockez l'axe X dans la référence
 
     // Setting for Y Axis.
-    chart.getDefaultAxisY().setTitle("Y Axis");
+    chart
+    .getDefaultAxisY()
+    .setThickness(60)
+
 
     // Setting for Cursor.
     chart.setAutoCursor((cursor) =>
@@ -105,7 +107,7 @@ const Chart = ({ id, socket }: ChartProps) => {
       // Destroy chart.
       console.log("destroy chart");
       chart.dispose();
-      chartRef.current = undefined;
+      //chartRef.current
     };
   }, [id]);
 
@@ -114,24 +116,24 @@ const Chart = ({ id, socket }: ChartProps) => {
     if (!components) return;
 
     // Set chart data.
-    const { series, series2, chart } = components;
+    const { series, series2 } = components;
     // Set default view
-    chart.zoom({ x: -200, y: 180 }, { x: 200, y: Math.max(maxY, 500) });
+    //chart.zoom({ x: -200, y: 180 }, { x: 200, y: Math.max(maxY, 500) });
+
+    socket.on("connect", () => {
+          console.log("connected");
+    });
 
     // Connect to socket.io server
-    socket.on("data", (data) => {      
-      console.log(data);
+    socket.on("rms_data", (data) => {      
+      //console.log(data);
       const timeStamp = data.x - timeBeginInMS;
       series.add({ x: timeStamp, y: data.y1 });
       series2.add({ x: timeStamp, y: data.y2 });
-
-      // Met à jour la valeur maximale de l'axe Y
-      setMaxY(Math.max(data.y1, data.y2));
-
-      // Met à jour la plage de l'axe X pour s'adapter aux nouvelles données
-      axisX.setInterval(timeStamp - 200, timeStamp + 200); // Vous pouvez ajuster la plage en fonction de vos besoins
     });
   }, [chartRef, socket]);
+
+
 
   return (
     <>
